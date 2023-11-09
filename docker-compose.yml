@@ -15,20 +15,23 @@ services:
       - ./docker/postgres/init:/docker-entrypoint-initdb.d/
 
   app:
-    image: valentinochiappanni07/backend:v3.0.0
+    image: valentinochiappanni07/frontend:v5.0.0
     ports:
       - "4000:4000"
       - "1234:1234"
     environment:
-      - DATABASE_HOST=db
-      - DATABASE_PORT=5432  
-      - DATABASE_NAME=cartelera
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=picateclasUnahur
+      - DATABASE_HOST=db  #Host de la base de datos.
+      - DATABASE_PORT=5432  #Puerto de la base de datos.
+      - DATABASE_NAME=cartelera #Nombre de la base de datos.
+      - DATABASE_USER=postgres #Usuario de la base de datos.
+      - DATABASE_PASSWORD=picateclasUnahur #Contraseña de la base de datos.
+      - HOST=http://186.12.145.198 #Host de la api.
+      - PORT=4000 #Puerto de la api.
     volumes:
-      - ./public:/usr/src/app/public
+      - ./public:/usr/src/app/public #Ruta para persistir archivos. (Cambiar solo lado derecho).
 
   front:
-    image: valentinochiappanni07/frontend:v3.0.0
+    image: valentinochiappanni07/frontend:v5.0.0
     ports:
       - "80:80"
+
