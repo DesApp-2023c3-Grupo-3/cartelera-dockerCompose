@@ -15,7 +15,7 @@ services:
       - ./docker/postgres/init:/docker-entrypoint-initdb.d/
 
   app:
-    image: valentinochiappanni07/frontend:v5.0.0
+    image: valentinochiappanni07/backend:v6.0.0
     ports:
       - "4000:4000"
       - "1234:1234"
@@ -31,7 +31,7 @@ services:
       - ./public:/usr/src/app/public #Ruta para persistir archivos. (Cambiar solo lado derecho).
 
   front:
-    image: valentinochiappanni07/frontend:v5.0.0
+    image: valentinochiappanni07/frontend:v6.0.0
     ports:
       - "80:80"
 
