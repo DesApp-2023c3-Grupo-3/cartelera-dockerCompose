@@ -3,7 +3,7 @@ version: '3'
 services:
 
   db:
-    image: postgres:latest
+    image: postgres:15-alpine
     ports:
       - "5432:5432" 
     environment:
@@ -15,7 +15,7 @@ services:
       - ./docker/postgres/init:/docker-entrypoint-initdb.d/
 
   app:
-    image: valentinochiappanni07/backend:v6.0.0
+    image: valentinochiappanni07/backend:v6.0.10
     ports:
       - "4000:4000"
       - "1234:1234"
@@ -28,10 +28,9 @@ services:
       - HOST=http://186.12.145.198 #Host de la api.
       - PORT=4000 #Puerto de la api.
     volumes:
-      - ./public:/usr/src/app/public #Ruta para persistir archivos. (Cambiar solo lado derecho).
+      - ./assets:/usr/src/app/dist/assets #Ruta para persistir archivos. (Cambiar solo lado derecho).
 
   front:
-    image: valentinochiappanni07/frontend:v6.0.0
+    image: valentinochiappanni07/frontend:v6.0.11
     ports:
       - "80:80"
-
