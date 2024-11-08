@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 
 services:
 
@@ -13,24 +13,75 @@ services:
     volumes:
       - ./docker/postgres/data:/var/lib/postgresql/data
       - ./docker/postgres/init:/docker-entrypoint-initdb.d/
+    networks:
+      - database-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    restart: always
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin1234
+      - KC_DB=postgres
+      - KC_DB_URL_HOST=db
+      - KC_DB_USERNAME=postgres
+      - KC_DB_PASSWORD=picateclasUnahur
+    volumes:
+      - ./keycloak/init:/opt/keycloak/data/import
+      - ./keycloak/themes:/opt/keycloak/themes
+    depends_on:
+      - db
+    ports:
+      - 8080:8080
+      - 8443:8443
+    command: start-dev 
+            --spi-theme-static-max-age=-1
+            --spi-theme-cache-themes=false
+            --spi-theme-cache-templates=false
+            --import-realm
+    networks:
+      - database-network
 
   app:
-    image: valentinochiappanni07/backend:v6.0.12
+    image: valentinochiappanni07/backend:v20.0.0
     ports:
       - "4000:4000"
       - "1234:1234"
     environment:
-      - DATABASE_HOST=db  #Host de la base de datos.
+      - DATABASE_HOST=localhost  #Host de la base de datos.
       - DATABASE_PORT=5432  #Puerto de la base de datos.
       - DATABASE_NAME=cartelera #Nombre de la base de datos.
       - DATABASE_USER=postgres #Usuario de la base de datos.
       - DATABASE_PASSWORD=picateclasUnahur #Contraseña de la base de datos.
-      - HOST=http://186.12.145.198 #Host de la api.
+      - KEYCLOAK_URL=http://localhost:8080
+      - KEYCLOAK_REALM=cartelera
+      - KEYCLOAK_CLIENT_ID=cartelera-back
+      - HOST=http://localhost #Host de la api.
+      - KEYCLOAK_CLIENT_SECRET=Eb4ZBpfDVEHcZxMcOYIj34B3zUPBXump
       - PORT=4000 #Puerto de la api.
+    depends_on:
+      - db
+      - keycloak
     volumes:
       - ./assets:/usr/src/app/dist/assets #Ruta para persistir archivos. (Cambiar solo lado derecho).
-
+    network_mode: host
   front:
-    image: valentinochiappanni07/frontend:v6.0.14
+    image: valentinochiappanni07/frontend:v20.0.1
     ports:
       - "80:80"
+    depends_on:
+      - app
+    networks:
+      - database-network
+  cartelera:
+    image: valentinochiappanni07/microfront:v20.0.0
+    ports:
+      - 3000:3000
+    depends_on:
+      - app
+    networks:
+      - database-network
+
+networks:
+  database-network:
+    driver: bridge
