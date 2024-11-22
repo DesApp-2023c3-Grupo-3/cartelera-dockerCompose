@@ -1,2 +1,2 @@
-./docker/postgres/data
-./data
+docker/postgres/data
+assets

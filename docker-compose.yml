@@ -35,15 +35,12 @@ services:
       - 8080:8080
       - 8443:8443
     command: start-dev 
-            --spi-theme-static-max-age=-1
-            --spi-theme-cache-themes=false
-            --spi-theme-cache-templates=false
             --import-realm
     networks:
       - database-network
 
   app:
-    image: valentinochiappanni07/backend:v20.0.0
+    image: valentinochiappanni07/backend:v21.0.1
     ports:
       - "4000:4000"
       - "1234:1234"
@@ -57,24 +54,27 @@ services:
       - KEYCLOAK_REALM=cartelera
       - KEYCLOAK_CLIENT_ID=cartelera-back
       - HOST=http://localhost #Host de la api.
-      - KEYCLOAK_CLIENT_SECRET=Eb4ZBpfDVEHcZxMcOYIj34B3zUPBXump
+      - KEYCLOAK_CLIENT_SECRET=Klk05wZBsFNF7oMKbiRXn9eGSCX3vPUo
       - PORT=4000 #Puerto de la api.
+    command: sh -c "sleep 10 && npm run db:migrate:prod && node dist/main"
     depends_on:
       - db
       - keycloak
     volumes:
       - ./assets:/usr/src/app/dist/assets #Ruta para persistir archivos. (Cambiar solo lado derecho).
     network_mode: host
+
   front:
-    image: valentinochiappanni07/frontend:v20.0.1
+    image: valentinochiappanni07/frontend:v21.0.0
     ports:
       - "80:80"
     depends_on:
       - app
     networks:
       - database-network
+
   cartelera:
-    image: valentinochiappanni07/microfront:v20.0.0
+    image: valentinochiappanni07/microfront:v20.0.1
     ports:
       - 3000:3000
     depends_on:
